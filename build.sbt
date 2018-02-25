@@ -20,6 +20,10 @@ libraryDependencies ++= {
     // SQL generator
     "com.typesafe.slick" %% "slick" % slickVersion,
 
+    // Logging (should be replaced with logback)
+    "org.slf4j" % "slf4j-log4j12" % "1.7.25",
+    "log4j" % "log4j" % "1.2.17",
+
     // Postgres driver
     "org.postgresql" % "postgresql" % "42.1.4",
 
