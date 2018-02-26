@@ -2,7 +2,11 @@ package me.archdev.restapi.utils
 
 import pureconfig.loadConfig
 
-case class Config(secretKey: String, http: HttpConfig, database: DatabaseConfig)
+case class Config(secretKey: String, http: HttpConfig, database: DatabaseConfig) {
+  if (secretKey.trim.isEmpty) {
+    throw new IllegalArgumentException("Secret key is empty")
+  }
+}
 
 object Config {
   def load() =

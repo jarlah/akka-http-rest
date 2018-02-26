@@ -8,13 +8,13 @@ import me.archdev.restapi.core.profiles.{JdbcUserProfileStorage, UserProfileServ
 import me.archdev.restapi.http.HttpRoute
 import me.archdev.restapi.utils.Config
 import me.archdev.restapi.utils.db.{DatabaseConnector, DatabaseMigrationManager}
-
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Await, ExecutionContext}
+import scala.language.postfixOps
 
 object Boot extends App {
 
   def startApplication() = {
-    implicit val actorSystem = ActorSystem()
+    implicit val actorSystem: ActorSystem = ActorSystem()
     implicit val executor: ExecutionContext = actorSystem.dispatcher
     implicit val materializer: ActorMaterializer = ActorMaterializer()
 
@@ -42,6 +42,13 @@ object Boot extends App {
     Http().bindAndHandle(httpRoute.route, config.http.host, config.http.port)
   }
 
-  startApplication()
+  val serverBinding = startApplication()
 
+  scala.sys.addShutdownHook {
+    println("Trying to shut down")
+    import scala.concurrent.duration._
+    import ExecutionContext.Implicits.global
+    Await.result(serverBinding.flatMap(_.unbind()), 30 second)
+    println("Successfully shut down")
+  }
 }
